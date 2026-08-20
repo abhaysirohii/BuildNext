@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: devtrack-db
+    environment:
+      POSTGRES_DB: devtrack
+      POSTGRES_USER: devtrack
+      POSTGRES_PASSWORD: devtrack
+    ports:
+      - "5432:5432"
+    volumes:
+      - devtrack_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devtrack"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: devtrack-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/devtrack
+      DB_USER: devtrack
+      DB_PASSWORD: devtrack
+      DB_DRIVER: org.postgresql.Driver
+      DB_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      JWT_SECRET: change-this-secret-before-any-real-deploy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: devtrack-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+
+volumes:
+  devtrack_pgdata:
