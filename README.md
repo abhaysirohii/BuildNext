@@ -30,6 +30,13 @@ devtrack/
 └── docker-compose.yml
 ```
 
+Configuration: Adding Your Gemini API Key
+If you extend the rewrite engine or analyzer features with Google Gemini (or any external AI service), configure your API key in the backend configuration file before starting the application:
+
+1. Open devtrack/backend/src/main/resources/application.yml in your code editor.
+
+2. Add your Gemini API key under the configuration properties:
+
 ## Run it - Option A: Docker Compose (full stack, PostgreSQL)
 
 ```bash
